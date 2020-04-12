@@ -327,7 +327,8 @@ if($auth) {
             <!-- Sidebar user panel -->
             <div class="user-panel">
                 <div class="pull-left image">
-                    <img src="img/logo.svg" class="img-responsive" alt="Pi-hole logo" style="display: table; table-layout: fixed; height: 67px;" />
+                    <!-- The table layout might be affecting why we have to increase the hight to avoid cut off for adding new header metrics -->
+                    <img src="img/logo.svg" class="img-responsive" alt="Pi-hole logo" style="display: table; table-layout: fixed; height: 80px;" />
                 </div>
                 <div class="pull-left info">
                     <p>Status</p>
@@ -406,6 +407,25 @@ if($auth) {
                         {
                             echo "\"></i> Memory usage:&nbsp;&nbsp; N/A</a>";
                         }
+                    ?>
+                    <!-- Show free disk space. Source: https://discourse.pi-hole.net/t/web-interface-show-disk-free-space-by-cpu-usage/3802/2 -->
+                    <br/>
+                    <?php
+                        $bytes = disk_free_space("/");
+                        $si_prefix = array( 'B', 'KB', 'MB', 'GB', 'TB', 'EB', 'ZB', 'YB' );
+                        $base = 1024;
+                        $class = min((int)log($bytes , $base) , count($si_prefix) - 1);
+                        //echo $bytes . '<br />';
+                        echo "<a><i class=\"fa fa-circle\" style=\"color:";
+                        if ($bytes < 10000000) { // I chose 10mb you could do larger... maybe 100mb?
+                            echo "#FF0000";
+                        }
+                        else
+                        {
+                            echo "#7FFF00";
+                        }
+                        echo "\"></i>Disk Free: ";
+                        echo sprintf('%1.2f' , $bytes / pow($base,$class)) . ' ' . $si_prefix[$class] . '</a>';
                     ?>
                 </div>
             </div>
